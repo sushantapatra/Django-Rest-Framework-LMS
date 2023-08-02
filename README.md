@@ -28,7 +28,9 @@
 
 ### register the app inside setting.py
 
-
+# `python manage.py makemigrations`
+# `python manage.py migrate`
+# `python manage.py createsuperuser`
 
 ## MYSQL DATABASE SETUP
 https://dev.mysql.com/downloads/mysql/
