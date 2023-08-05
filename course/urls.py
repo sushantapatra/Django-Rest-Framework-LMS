@@ -1,9 +1,10 @@
 from django.contrib import admin
 from django.urls import path
 
-from .views import testView
+from .views import testView, CategoryListView
 
-# /api/course/
+# /api/
 urlpatterns = [
-    path('test/', testView, name="test-api")
+    path('test/', testView, name="test-api"),
+    path('categories/', CategoryListView.as_view(), name="api-categories"),
 ]
