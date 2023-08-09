@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'coupon',
     'review',
     'doubt',
+    'root'
 ]
 
 MIDDLEWARE = [
