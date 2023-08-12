@@ -1,9 +1,11 @@
+from django.core.exceptions import ValidationError
 from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAdminUser
 from root.permissions import isAdminUserOrReadonly
+from rest_framework.response import Response
 
 # Create your views here.
 from course.models import Category, Course, Tag
@@ -36,6 +38,30 @@ class CourseViewSet(ModelViewSet):
     permission_classes = [isAdminUserOrReadonly]
     serializer_class = CourseSerializer
     queryset = Course.objects.all()
+
+    # override the create method for save category instance on course create time
+    def create(self, request, *args, **kwargs):
+        # return Response("Create Method Called...")
+        course = request.data
+        category_id = course.get('course_id')
+
+        category = None
+        if category_id is None:
+            return Response({'category_id': ["category_id is required."]})
+
+        try:
+            category = Category.objects.get(pk=category_id)
+        except Category.DoesNotExist or ValidationError:
+            return Response({'category_id': ["category_id is not valid."]})
+
+        serializer = CourseSerializer(data=course)
+        if (serializer.is_valid()):
+            courseInstance = Course(
+                **serializer.validated_data, category=category)
+            courseInstance = courseInstance.save()
+            return Response(CategorySerializer(courseInstance).data)
+
+        return Response(serializer.errors)
 
 
 class CourseSlugDetailView(RetrieveUpdateDestroyAPIView):
